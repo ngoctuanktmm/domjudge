@@ -26,17 +26,17 @@ sudo apt-get remove -y openjdk-8-jdk openjdk-8-jre openjdk-8-jre-headless oracle
 
 # configure, make and install (but skip documentation)
 make configure
-./configure --disable-doc-build --with-baseurl='http://localhost/domjudge/'
+./configure --disable-doc-build --with-baseurl='http://localhost/domjudge/' --with-domjudge-user=root
 make domserver judgehost
 sudo make install-domserver install-judgehost
 
 # setup database and add special user
 cd /opt/domjudge/domserver
-sudo bin/dj_setup_database install
-echo "INSERT INTO user (userid, username, name, password, teamid) VALUES (3, 'dummy', 'dummy user for example team', '\$2y\$10\$0d0sPmeAYTJ/Ya7rvA.kk.zvHu758ScyuHAjps0A6n9nm3eFmxW2K', 2)" | sudo mysql domjudge
-echo "INSERT INTO userrole (userid, roleid) VALUES (3, 2);" | sudo mysql domjudge
-echo "INSERT INTO userrole (userid, roleid) VALUES (3, 3);" | sudo mysql domjudge
-echo "machine localhost login dummy password dummy" > ~/.netrc
+#sudo bin/dj_setup_database install
+#echo "INSERT INTO user (userid, username, name, password, teamid) VALUES (3, 'dummy', 'dummy user for example team', '\$2y\$10\$0d0sPmeAYTJ/Ya7rvA.kk.zvHu758ScyuHAjps0A6n9nm3eFmxW2K', 2)" | sudo mysql domjudge
+#echo "INSERT INTO userrole (userid, roleid) VALUES (3, 2);" | sudo mysql domjudge
+#echo "INSERT INTO userrole (userid, roleid) VALUES (3, 3);" | sudo mysql domjudge
+#echo "machine localhost login dummy password dummy" > ~/.netrc
 
 # configure and restart apache
 sudo cp /opt/domjudge/domserver/etc/apache.conf /etc/apache2/sites-enabled/
@@ -54,8 +54,9 @@ sudo bin/create_cgroups
 
 # build chroot
 cd ${DIR}/misc-tools
-sudo ./dj_make_chroot -a amd64
+sudo ./dj_make_chroot -a i386 	# or amd64
 
+# ${DIR} == /root/DOMjudge/domjudge/
 # start judgedaemon
 cd /opt/domjudge/judgehost/
 bin/judgedaemon -n 0 &
